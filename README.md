@@ -1,7 +1,8 @@
 # /dev/heart
 
-Kernel Module which illustrates a Tuxs heart
+Kernel Module which creates a device to listen to Tuxs heart.
 
 ```bash
-insmod tuxheart.ko
+make
+sudo make insert
 ```
