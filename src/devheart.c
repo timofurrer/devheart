@@ -16,6 +16,8 @@
 #include <linux/miscdevice.h>
 #include <linux/slab.h>
 #include <linux/uaccess.h>
+#include <linux/kthread.h>
+#include <linux/sched.h>
 
 // module header information
 MODULE_LICENSE("MIT");
@@ -24,6 +26,20 @@ MODULE_DESCRIPTION("Kernel Module which illustrates a Tuxs heart.");
 
 // device name to use
 #define DEVICE_NAME "heart"
+
+// kernel thread instance
+struct task_struct *task;
+
+int measure_cpu_utilization(void *data) {
+    pr_info("in thread function");
+
+    while(!kthread_should_stop()) {
+        pr_info("in kthread function loop");
+        schedule();
+    }
+
+    return 0;
+}
 
 static int device_open(struct inode *inode, struct file *file) {
     pr_info("heart device open");
@@ -90,6 +106,10 @@ static int __init heart_init(void)
 {
     int ret;
 
+    // TODO: check return value
+    task = kthread_run(&measure_cpu_utilization, NULL, "heartmonitor");
+    pr_info("start kthread %s to measure cpu utilization", task->comm);
+
     ret = misc_register(&heart_dev);
     if(ret) {
         pr_err("could not register heart device as misc devie\n");
@@ -105,7 +125,8 @@ static void __exit heart_exit(void)
 {
     misc_deregister(&heart_dev);
     pr_info("deregistered heart device!\n");
-        /*printk(KERN_INFO "Cleaning up module.\n");*/
+
+    kthread_stop(task);
 }
 
 module_init(heart_init);
