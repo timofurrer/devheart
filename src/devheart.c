@@ -36,8 +36,34 @@ static int device_release(struct inode *inode, struct file *file) {
 }
 
 static ssize_t device_read(struct file *file, char *buffer, size_t length, loff_t *offset) {
-    pr_info("heart device read");
-    return 0;
+    char *data = "Master, tux is very healthy!\n";
+    int len = strlen(data);
+    /*
+     * only support reading the whole string at once.
+     */
+    if(length < len) {
+        return -EINVAL;
+    }
+    /*
+     * If file position is non-zero, then assume the string has
+     * been read and indicate there is no more data to be read.
+     */
+    if(*offset != 0) {
+        return 0;
+    }
+    /*
+     * Besides copying the string to the user provided buffer,
+     * this function also checks that the user has permission to
+     * write to the buffer, that it is mapped, etc.
+     */
+    if(copy_to_user(buffer, data, len))
+            return -EINVAL;
+    /*
+     * Tell the user how much data we wrote.
+     */
+    *offset = len;
+
+    return len;
 }
 
 static ssize_t device_write(struct file *file, const char *buffer, size_t length, loff_t *offset) {

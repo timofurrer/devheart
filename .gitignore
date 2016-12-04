@@ -1,2 +1,16 @@
 # vim swap files
 *.swp
+
+# files generated during module compilation
+.built-in.o.cmd
+.tmp_versions/
+Module.symvers
+built-in.o
+modules.order
+src/.devheart.ko.cmd
+src/.devheart.mod.o.cmd
+src/.devheart.o.cmd
+src/devheart.ko
+src/devheart.mod.c
+src/devheart.mod.o
+src/devheart.o
