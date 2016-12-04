@@ -1,6 +1,14 @@
-#include <linux/module.h>    // included for all kernel modules
-#include <linux/kernel.h>    // included for KERN_INFO
-#include <linux/init.h>      // included for __init and __exit macros
+/**
+ *
+ * Kernel Module which creates a device to listen to Tuxs heart.
+ *
+ * @copyright: MIT (see LICENSE), by Timo Furrer <tuxtimo@gmail.com>
+ *
+ */
+
+#include <linux/module.h>
+#include <linux/kernel.h>
+#include <linux/init.h>
 #include <linux/fs.h>
 #include <linux/miscdevice.h>
 #include <linux/slab.h>
@@ -9,8 +17,7 @@
 // module header information
 MODULE_LICENSE("MIT");
 MODULE_AUTHOR("Timo Furrer");
-MODULE_DESCRIPTION("Kernel Module which illustrates a Tuxs heart. ");
-
+MODULE_DESCRIPTION("Kernel Module which illustrates a Tuxs heart.");
 
 // device name to use
 #define DEVICE_NAME "heart"
