@@ -18,6 +18,8 @@
 #include <linux/uaccess.h>
 #include <linux/kthread.h>
 #include <linux/sched.h>
+#include <linux/cpumask.h>  // for_each_possible_cpu
+#include <linux/kernel_stat.h>  // kcpustat_cpu
 
 // module header information
 MODULE_LICENSE("MIT");
@@ -30,13 +32,31 @@ MODULE_DESCRIPTION("Kernel Module which illustrates a Tuxs heart.");
 // kernel thread instance
 struct task_struct *task;
 
+u64 cpu_stat(void) {
+    int i;
+    // TODO: merge those two variables
+    u64 user, system;
+
+    for_each_possible_cpu(i) {
+        user += kcpustat_cpu(i).cpustat[CPUTIME_USER];
+        system += kcpustat_cpu(i).cpustat[CPUTIME_SYSTEM];
+    }
+
+    return user + system;
+}
+
 int measure_cpu_utilization(void *data) {
+    u64 foo;
     pr_info("in thread function");
 
-    while(!kthread_should_stop()) {
-        pr_info("in kthread function loop");
-        schedule();
-    }
+    foo = cpu_stat();
+    pr_info("got cpu stat: %llu", cputime64_to_clock_t(foo));
+    foo = cpu_stat();
+    pr_info("got cpu stat: %llu", cputime64_to_clock_t(foo));
+    /*while(!kthread_should_stop()) {*/
+        /*pr_info("in kthread function loop");*/
+        /*schedule();*/
+    /*}*/
 
     return 0;
 }
