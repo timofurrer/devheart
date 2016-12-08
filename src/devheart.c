@@ -2,7 +2,7 @@
  *
  * Kernel Module which creates a device to listen to Tuxs heart.
  *
- * @copyright: MIT (see LICENSE), by Timo Furrer <tuxtimo@gmail.com>
+ * @copyright: GPLv2 (see LICENSE), by Timo Furrer <tuxtimo@gmail.com>
  *
  */
 
