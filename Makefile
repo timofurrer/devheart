@@ -1,16 +1,18 @@
-obj-m += src/devheart.o
+obj-m += devheart.o
+devheart-y = src/devheart.o
+devheart-y += src/single_beat.o
 
-MODULES_DIR := /lib/modules/$(shell uname -r)/build
+KDIR := /lib/modules/$(shell uname -r)/build
 PWD := $(shell pwd)
 
 all:
-	$(MAKE) -C $(MODULES_DIR) M=$(PWD)
+	$(MAKE) -C $(KDIR) M=$(PWD)
 
 clean:
-	$(MAKE) -C $(MODULES_DIR) M=$(PWD) clean
+	$(MAKE) -C $(KDIR) M=$(PWD) clean
 
 insert:
-	insmod src/devheart.ko
+	insmod devheart.ko
 
 remove:
-	rmmod src/devheart.ko
+	rmmod devheart.ko

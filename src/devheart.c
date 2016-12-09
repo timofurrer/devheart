@@ -23,6 +23,8 @@
 #include <linux/delay.h>  // msleep_interruptible
 #include <linux/tick.h> // get_cpu_idle_time_us
 
+#include "devheart.h"
+
 // module header information
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Timo Furrer");
@@ -34,8 +36,17 @@ MODULE_DESCRIPTION("Kernel Module which illustrates a Tuxs heart.");
 // interval in milliseconds in which to measure CPU utilization
 #define CPU_MEASURE_INTERVAL 1000
 
+// heart beat sound data
+extern struct devheart_sound_t single_beat;
+
 // kernel thread instance
 struct task_struct *task;
+
+// current data which is being read
+// FIXME: refactor - find better way to do this ...
+struct devheart_read_data_t {
+    char *data;
+};
 
 static u64 get_idle_time(int cpu)
 {
@@ -130,43 +141,48 @@ int measure_cpu_utilization(void *data) {
 
 static int device_open(struct inode *inode, struct file *file) {
     pr_info("heart device open");
+    struct devheart_read_data_t *read_data;
+
+    read_data = kzalloc(sizeof(*read_data), GFP_KERNEL);
+    if(!read_data) {
+        pr_err("could not allocate kernel memory for heartbeat read data");
+        return -ENOMEM;
+    }
+
+    // store current data in context object
+    read_data->data = single_beat.data;
+
+    // store context object
+    file->private_data = read_data;
     return 0;
 }
 
 static int device_release(struct inode *inode, struct file *file) {
+    struct devheart_read_data_t *read_data = file->private_data;
+
+    kfree(read_data);
+
     pr_info("heart device release");
     return 0;
 }
 
 static ssize_t device_read(struct file *file, char *buffer, size_t length, loff_t *offset) {
-    char *data = "Master, tux is very healthy!\n";
-    int len = strlen(data);
-    /*
-     * only support reading the whole string at once.
-     */
-    if(length < len) {
-        return -EINVAL;
-    }
-    /*
-     * If file position is non-zero, then assume the string has
-     * been read and indicate there is no more data to be read.
-     */
-    if(*offset != 0) {
-        return 0;
-    }
-    /*
-     * Besides copying the string to the user provided buffer,
-     * this function also checks that the user has permission to
-     * write to the buffer, that it is mapped, etc.
-     */
-    if(copy_to_user(buffer, data, len))
-            return -EINVAL;
-    /*
-     * Tell the user how much data we wrote.
-     */
-    *offset = len;
+    int read;
+    struct devheart_read_data_t *current_data;
 
-    return len;
+    // the number of bytes which are already been read
+    read = 0;
+
+    current_data = file->private_data;
+
+    // read sound track until completed.
+    while(length && (current_data->data - single_beat.data) < single_beat.size) {
+        put_user(*(current_data->data++), buffer++);
+        length--;
+        read++;
+    }
+
+    return read;
 }
 
 static ssize_t device_write(struct file *file, const char *buffer, size_t length, loff_t *offset) {
@@ -193,6 +209,9 @@ static int __init heart_init(void)
 {
     int ret;
 
+    pr_info("Sound length: %lu", single_beat.size);
+    pr_info("Sound data[0]: %x", single_beat.data[0]);
+
     // TODO: check return value
     task = kthread_run(&measure_cpu_utilization, NULL, "heartmonitor");
     pr_info("start kthread %s to measure cpu utilization", task->comm);
@@ -203,7 +222,8 @@ static int __init heart_init(void)
         return ret;
     }
 
-    pr_info("registered heart device!\n");
+    pr_info("Listen to Tux's heart!");
+    pr_info("--> cat /dev/" DEVICE_NAME " | aplay -r 62500");
 
     return 0;
 }
