@@ -167,7 +167,7 @@ static int device_release(struct inode *inode, struct file *file) {
 }
 
 static ssize_t device_read(struct file *file, char *buffer, size_t length, loff_t *offset) {
-    int read;
+    ssize_t read;
     struct devheart_read_data_t *current_data;
 
     // the number of bytes which are already been read
