@@ -11,6 +11,12 @@ That's what this kernel module will do!
 aplay -r 44100 -f s16_le /dev/heart
 ```
 
+or if you like piping stuff:
+
+```bash
+cat /dev/heart | aplay -r 44100 -f s16_le
+```
+
 ## Installation
 
 ```bash
