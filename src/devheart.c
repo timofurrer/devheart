@@ -138,7 +138,7 @@ int measure_cpu_utilization(void *data) {
 
         // calculate CPU usage in percentage
         cpu_utilization = (1000 * (delta_total_time - delta_idle_time) / delta_total_time + 5) / 10;
-        pr_info("Current CPU Utilization is %d%%", cpu_utilization);
+        pr_info("current CPU utilization is %d%%\n", cpu_utilization);
         current_cpu_utilization = cpu_utilization;
 
         previous_cpu_idle_time = current_cpu_idle_time;
@@ -150,26 +150,30 @@ int measure_cpu_utilization(void *data) {
 
 static ssize_t generate_heartbeat(struct devheart_sound_buffer_t *sound_buffer) {
     size_t data_size;
-    int utilization_factor;
+    int utilization_factor, short_pause_factor, long_pause_factor;
     size_t offset = 0;
     int i;
 
+    pr_debug("=====> Generating new heartbeat ...\n");
+
     // TODO: experiment and improve!
-    utilization_factor = 100 - current_cpu_utilization;
+    utilization_factor = (100 - current_cpu_utilization) / 6;
+    short_pause_factor = utilization_factor;
+    long_pause_factor = utilization_factor * 60;
 
     // beats
     data_size = 2 * single_beat_sound.size;
 
     // pause between the two beats
-    data_size += pause_sound.size * utilization_factor;
+    data_size += pause_sound.size * short_pause_factor;
 
     // pause after the two beats
-    data_size += pause_sound.size * utilization_factor * 25;
+    data_size += pause_sound.size * long_pause_factor;
 
     // generate heartbeat
     sound_buffer->buffer = vzalloc(data_size * sizeof(char));
     if(!sound_buffer->buffer) {
-        pr_err("could not allocate kernel memory for next heartbeat -> defibrillate, NOW!");
+        pr_err("could not allocate kernel memory for next heartbeat -> defibrillate, NOW!\n");
         return -ENOMEM;
     }
 
@@ -177,7 +181,7 @@ static ssize_t generate_heartbeat(struct devheart_sound_buffer_t *sound_buffer) 
     memcpy(sound_buffer->buffer, single_beat_sound.data, single_beat_sound.size);
     offset += single_beat_sound.size;
 
-    for(i = 0; i < utilization_factor; i++) {
+    for(i = 0; i < short_pause_factor; i++) {
         memcpy(sound_buffer->buffer + offset, pause_sound.data, pause_sound.size);
         offset += pause_sound.size;
     }
@@ -185,24 +189,24 @@ static ssize_t generate_heartbeat(struct devheart_sound_buffer_t *sound_buffer) 
     memcpy(sound_buffer->buffer + offset, single_beat_sound.data, single_beat_sound.size);
     offset += single_beat_sound.size;
 
-    for(i = 0; i < utilization_factor * 25; i++) {
+    for(i = 0; i < long_pause_factor; i++) {
         memcpy(sound_buffer->buffer + offset, pause_sound.data, pause_sound.size);
         offset += pause_sound.size;
     }
 
-    pr_info("Heartbeat data size: %lu, used: %lu", data_size, offset);
     sound_buffer->size = data_size;
     sound_buffer->current_offset = 0;
     return data_size;
 }
 
 static int device_open(struct inode *inode, struct file *file) {
-    pr_info("heart device open");
     struct devheart_sound_buffer_t *sound_buffer;
+
+    pr_info("Okay, let's listen to Master Tuxs heart ...\n");
 
     sound_buffer = kzalloc(sizeof(*sound_buffer), GFP_KERNEL);
     if(!sound_buffer) {
-        pr_err("could not allocate kernel memory for heartbeat read data");
+        pr_err("could not allocate kernel memory for heartbeat read data\n");
         return -ENOMEM;
     }
 
@@ -219,7 +223,7 @@ static int device_release(struct inode *inode, struct file *file) {
 
     kfree(sound_buffer);
 
-    pr_info("heart device release");
+    pr_info("I'll check in on you later, Master Tux!\n");
     return 0;
 }
 
@@ -233,29 +237,25 @@ static ssize_t device_read(struct file *file, char *buffer, size_t length, loff_
     // check if current sound buffer is exhausted
     if(sound_buffer->size - sound_buffer->current_offset <= 0) {
         // generate next heartbeat including pauses
-        pr_info("Free old heartbeat memory");
-        vfree(sound_buffer->buffer);
-        pr_info("Generating heartbeat");
+        vfree(sound_buffer->buffer - sound_buffer->current_offset);
         generate_heartbeat(sound_buffer);
     }
 
     bytes_read = 0;
-    pr_info("Playing heartbeat");
     while(length && (sound_buffer->size - sound_buffer->current_offset) > 0) {
         put_user(*(sound_buffer->buffer++), buffer++);
         length--;
         sound_buffer->current_offset++;
         bytes_read++;
     }
-    pr_info("Played some heartbeat");
 
     *offset = bytes_read;
     return bytes_read;
 }
 
 static ssize_t device_write(struct file *file, const char *buffer, size_t length, loff_t *offset) {
-    pr_info("heart device write");
-    return 0;
+    pr_err("I'm sooo sorry, but you cannot influence Master Tux' healt ...\n");
+    return -EINVAL;
 }
 
 static const struct file_operations fileops = {
@@ -279,7 +279,6 @@ static int __init heart_init(void)
 
     // TODO: check return value
     task = kthread_run(&measure_cpu_utilization, NULL, "heartmonitor");
-    pr_info("start kthread %s to measure cpu utilization", task->comm);
 
     ret = misc_register(&heart_dev);
     if(ret) {
@@ -287,8 +286,8 @@ static int __init heart_init(void)
         return ret;
     }
 
-    pr_info("Listen to Tux's heart!");
-    pr_info("--> cat /dev/" DEVICE_NAME " | aplay -r 44100 -f s16_le");
+    pr_info("Listen to Tux's heart!\n");
+    pr_info("--> cat /dev/" DEVICE_NAME " | aplay -r 44100 -f s16_le\n");
 
     return 0;
 }
@@ -298,7 +297,6 @@ static void __exit heart_exit(void)
     kthread_stop(task);
 
     misc_deregister(&heart_dev);
-    pr_info("deregistered heart device!\n");
 }
 
 module_init(heart_init);
