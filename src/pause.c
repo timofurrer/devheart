@@ -9,11 +9,11 @@
 #include <linux/kernel.h>
 #include "devheart.h"
 
-#define DEVHEART_SINGLE_BEAT_SIZE 38428
+#define DEVHEART_PAUSE_SIZE 64
 
-struct devheart_sound_t single_beat_sound = {
-    .size = DEVHEART_SINGLE_BEAT_SIZE,
+struct devheart_sound_t pause_sound = {
+    .size = DEVHEART_PAUSE_SIZE,
     .data = {
-#include "single_beat_data.h"
+#include "pause_data.h"
     }
 };
