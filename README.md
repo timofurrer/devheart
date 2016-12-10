@@ -19,3 +19,10 @@ cd devheart
 make
 sudo make insert
 ```
+
+## Wow, did I really just hear Master Tux' heart?
+
+Yes, sure!
+
+So, we could assume that Master Tux' heart are the CPUs. Now, depending on how stressed those CPUs are, Master Tux will feel healthy or not.
+See, `dmesg` for more information.
