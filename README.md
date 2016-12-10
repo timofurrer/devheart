@@ -32,3 +32,7 @@ Yes, sure!
 
 So, we could assume that Master Tux' heart are the CPUs. Now, depending on how stressed those CPUs are, Master Tux will feel healthy or not.
 See, `dmesg` for more information.
+
+## Let's run it in production
+
+Yeah! Great idea! Just, don't tell your boss ...
