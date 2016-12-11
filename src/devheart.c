@@ -38,7 +38,8 @@ MODULE_DESCRIPTION("Kernel Module to listen to Tuxs heart.");
 #define CPU_MEASURE_INTERVAL 1000
 
 // heart beat sound data
-extern struct devheart_sound_t single_beat_sound;
+extern struct devheart_sound_t left_ventricle_beat_sound;
+extern struct devheart_sound_t right_ventricle_beat_sound;
 
 // kernel thread instance
 struct task_struct *task;
@@ -162,7 +163,7 @@ static ssize_t generate_heartbeat(struct devheart_sound_buffer_t *sound_buffer) 
     long_pause_factor = utilization_factor * 60;
 
     // beats
-    data_size = 2 * single_beat_sound.size;
+    data_size = left_ventricle_beat_sound.size + right_ventricle_beat_sound.size;
 
     // pause between the two beats
     data_size += 64 * short_pause_factor;
@@ -178,16 +179,16 @@ static ssize_t generate_heartbeat(struct devheart_sound_buffer_t *sound_buffer) 
     }
 
     // write sound data to buffer
-    memcpy(sound_buffer->buffer, single_beat_sound.data, single_beat_sound.size);
-    offset += single_beat_sound.size;
+    memcpy(sound_buffer->buffer, left_ventricle_beat_sound.data, left_ventricle_beat_sound.size);
+    offset += left_ventricle_beat_sound.size;
 
     for(i = 0; i < short_pause_factor * 64; i++) {
         memcpy(sound_buffer->buffer + offset, &PAUSE_SOUND_BYTE, sizeof(PAUSE_SOUND_BYTE));
         offset += sizeof(PAUSE_SOUND_BYTE);
     }
 
-    memcpy(sound_buffer->buffer + offset, single_beat_sound.data, single_beat_sound.size);
-    offset += single_beat_sound.size;
+    memcpy(sound_buffer->buffer + offset, right_ventricle_beat_sound.data, right_ventricle_beat_sound.size);
+    offset += right_ventricle_beat_sound.size;
 
     for(i = 0; i < long_pause_factor * 64; i++) {
         memcpy(sound_buffer->buffer + offset, &PAUSE_SOUND_BYTE, sizeof(PAUSE_SOUND_BYTE));
