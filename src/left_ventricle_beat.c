@@ -9,7 +9,7 @@
 #include <linux/kernel.h>
 #include "devheart.h"
 
-#define DEVHEART_LEFT_VENTRICLE_BEAT_SIZE 44124
+#define DEVHEART_LEFT_VENTRICLE_BEAT_SIZE 22112
 
 struct devheart_sound_t left_ventricle_beat_sound = {
     .size = DEVHEART_LEFT_VENTRICLE_BEAT_SIZE,
