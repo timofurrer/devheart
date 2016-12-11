@@ -18,9 +18,9 @@
 #include <linux/uaccess.h>
 #include <linux/kthread.h>
 #include <linux/sched.h>
-#include <linux/cpumask.h>  // for_each_possible_cpu
-#include <linux/kernel_stat.h>  // kcpustat_cpu
-#include <linux/delay.h>  // msleep_interruptible
+#include <linux/cpumask.h> // for_each_possible_cpu
+#include <linux/kernel_stat.h> // kcpustat_cpu
+#include <linux/delay.h> // msleep_interruptible
 #include <linux/tick.h> // get_cpu_idle_time_us
 #include <linux/vmalloc.h> // vmalloc
 
@@ -37,6 +37,9 @@ MODULE_DESCRIPTION("Kernel Module to listen to Tuxs heart.");
 // interval in milliseconds in which to measure CPU utilization
 #define CPU_MEASURE_INTERVAL 1000
 
+// base factor for pause length between heartbeats
+#define BASE_PAUSE_FACTOR 64
+
 // heart beat sound data
 extern struct devheart_sound_t left_ventricle_beat_sound;
 extern struct devheart_sound_t right_ventricle_beat_sound;
@@ -50,10 +53,10 @@ struct devheart_sound_buffer_t {
     char *buffer;
     size_t size;
     size_t current_offset;
-    // current cpu utilization in % over all available CPUs
     int current_cpu_utilization;
 };
 
+// single byte to represent the pause between two heartbeats (~silence)
 const char PAUSE_SOUND_BYTE = 0xFF;
 
 static u64 get_idle_time(int cpu)
@@ -162,10 +165,10 @@ static ssize_t generate_heartbeat(struct devheart_sound_buffer_t *sound_buffer) 
     data_size = left_ventricle_beat_sound.size + right_ventricle_beat_sound.size;
 
     // pause between the two beats
-    data_size += 64 * short_pause_factor;
+    data_size += BASE_PAUSE_FACTOR * short_pause_factor;
 
     // pause after the two beats
-    data_size += 64 * long_pause_factor;
+    data_size += BASE_PAUSE_FACTOR * long_pause_factor;
 
     // generate heartbeat
     sound_buffer->buffer = vzalloc(data_size * sizeof(char));
@@ -178,7 +181,7 @@ static ssize_t generate_heartbeat(struct devheart_sound_buffer_t *sound_buffer) 
     memcpy(sound_buffer->buffer, left_ventricle_beat_sound.data, left_ventricle_beat_sound.size);
     offset += left_ventricle_beat_sound.size;
 
-    for(i = 0; i < short_pause_factor * 64; i++) {
+    for(i = 0; i < short_pause_factor * BASE_PAUSE_FACTOR; i++) {
         memcpy(sound_buffer->buffer + offset, &PAUSE_SOUND_BYTE, sizeof(PAUSE_SOUND_BYTE));
         offset += sizeof(PAUSE_SOUND_BYTE);
     }
@@ -186,7 +189,7 @@ static ssize_t generate_heartbeat(struct devheart_sound_buffer_t *sound_buffer) 
     memcpy(sound_buffer->buffer + offset, right_ventricle_beat_sound.data, right_ventricle_beat_sound.size);
     offset += right_ventricle_beat_sound.size;
 
-    for(i = 0; i < long_pause_factor * 64; i++) {
+    for(i = 0; i < long_pause_factor * BASE_PAUSE_FACTOR; i++) {
         memcpy(sound_buffer->buffer + offset, &PAUSE_SOUND_BYTE, sizeof(PAUSE_SOUND_BYTE));
         offset += sizeof(PAUSE_SOUND_BYTE);
     }
@@ -207,10 +210,11 @@ static int device_open(struct inode *inode, struct file *file) {
         return -ENOMEM;
     }
 
-    sound_buffer->current_cpu_utilization = 0;
-
-    // TODO: check return value
     task = kthread_run(&measure_cpu_utilization, sound_buffer, "heartmonitor");
+    if(!task) {
+        pr_err("could not start kernel thread to measure CPU utilization\n");
+        return -ENOMEM;
+    }
 
     // generate first heartbeat on open to be ready when it staaaarts!
     generate_heartbeat(sound_buffer);
