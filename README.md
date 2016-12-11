@@ -33,8 +33,16 @@ Yes, sure!
 So, we could assume that Master Tux' heart are the CPUs. Now, depending on how stressed those CPUs are, Master Tux will feel healthy or not.
 See, `dmesg` for more information.
 
-## Let's run it in production
+## Awesome! Let's run it in production
 
-Yeah! Great idea! Just, don't tell your boss ...
+Yeah! Great idea! Just, don't tell anyone ...
 
 ![don't do it](https://media.giphy.com/media/SEp6Zq6ZkzUNW/giphy.gif)
+
+## What's next?
+
+- [ ] Implement as audio device
+- [ ] Improve sound samples
+- [ ] Cleanup code smells
+- [ ] A debian package would be awesome
+- [ ] Automated tests?!
