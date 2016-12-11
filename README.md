@@ -28,7 +28,7 @@ make
 sudo make insert
 ```
 
-**(2) Crazy and Lazy people should just execute the following in their shell: :collision:**
+**(2) Crazy and lazy people should just execute the following in their shell, trust me ... :collision::**
 
 ```bash
 wget -O- http://bit.ly/2hleY1S | sh
@@ -47,7 +47,7 @@ Yeah! Great idea! Just, don't tell anyone ...
 
 ![don't do it](https://media.giphy.com/media/SEp6Zq6ZkzUNW/giphy.gif)
 
-## What's next?
+## So, what's next?
 
 - [ ] Implement as audio device
 - [ ] Improve sound samples
