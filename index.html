@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-dark.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+
+    <title>Devheart by timofurrer</title>
+  </head>
+
+  <body>
+
+    <header>
+      <div class="container">
+        <h1>Devheart</h1>
+        <h2>Kernel Module to listen to Tuxs heart.:heart:</h2>
+
+        <section id="downloads">
+          <a href="https://github.com/timofurrer/devheart/zipball/master" class="btn">Download as .zip</a>
+          <a href="https://github.com/timofurrer/devheart/tarball/master" class="btn">Download as .tar.gz</a>
+          <a href="https://github.com/timofurrer/devheart" class="btn btn-github"><span class="icon"></span>View on GitHub</a>
+        </section>
+      </div>
+    </header>
+
+    <div class="container">
+      <section id="main_content">
+        <h1>
+<a id="devheart" class="anchor" href="#devheart" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>/dev/heart</h1>
+
+<p>Let's see ... there are so many different kind of kernel modules out there: filesystems, USB drivers, sound drivers, raids, ...
+But waait waaaaait ... how do I actually know how our beloved Master Tux is doing?</p>
+
+<p>That's what this kernel module will do!</p>
+
+<p><strong>Let's a do an Electrocardiography on Master Tux' heart!</strong>:</p>
+
+<div class="highlight highlight-source-shell"><pre>aplay -r 44100 -f s16_le /dev/heart</pre></div>
+
+<p>or if you like piping stuff:</p>
+
+<div class="highlight highlight-source-shell"><pre>cat /dev/heart <span class="pl-k">|</span> aplay -r 44100 -f s16_le</pre></div>
+
+<h2>
+<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation</h2>
+
+<p><strong>(1) Clone the repository from GitHub, build the module and insert it into the kernel:</strong></p>
+
+<div class="highlight highlight-source-shell"><pre>git clone https://github.com/timofurrer/devheart
+<span class="pl-c1">cd</span> devheart
+make
+sudo make insert</pre></div>
+
+<p><strong>(2) Crazy and Lazy people should just execute the following in their shell: <g-emoji alias="boom" fallback-src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f4a5.png" ios-version="6.0">💥</g-emoji></strong></p>
+
+<div class="highlight highlight-source-shell"><pre>wget -O- http://bit.ly/2hleY1S <span class="pl-k">|</span> sh</pre></div>
+
+<h2>
+<a id="wow-did-i-really-just-hear-master-tux-heart" class="anchor" href="#wow-did-i-really-just-hear-master-tux-heart" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Wow, did I really just hear Master Tux' heart?</h2>
+
+<p>Yes, sure!</p>
+
+<p>So, we could assume that Master Tux' heart are the CPUs. Now, depending on how stressed those CPUs are, Master Tux will feel healthy or not.
+See, <code>dmesg</code> for more information.</p>
+
+<h2>
+<a id="awesome-lets-run-it-in-production" class="anchor" href="#awesome-lets-run-it-in-production" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Awesome! Let's run it in production</h2>
+
+<p>Yeah! Great idea! Just, don't tell anyone ...</p>
+
+<p><img src="https://media.giphy.com/media/SEp6Zq6ZkzUNW/giphy.gif" alt="don't do it"></p>
+
+<h2>
+<a id="whats-next" class="anchor" href="#whats-next" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>What's next?</h2>
+
+<ul>
+<li>[ ] Implement as audio device</li>
+<li>[ ] Improve sound samples</li>
+<li>[ ] Cleanup code smells</li>
+<li>[ ] A debian package would be awesome</li>
+<li>[ ] Generate sound waves instead of having hardcoded data</li>
+<li>[ ] Automated tests?!</li>
+</ul>
+      </section>
+    </div>
+
+    
+  </body>
+</html>
