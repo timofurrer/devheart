@@ -39,8 +39,6 @@ MODULE_DESCRIPTION("Kernel Module to listen to Tuxs heart.");
 
 // heart beat sound data
 extern struct devheart_sound_t single_beat_sound;
-// pause sound data
-extern struct devheart_sound_t pause_sound;
 
 // kernel thread instance
 struct task_struct *task;
@@ -52,6 +50,8 @@ struct devheart_sound_buffer_t {
     size_t size;
     size_t current_offset;
 };
+
+const char PAUSE_SOUND_BYTE = 0xFF;
 
 // current cpu utilization
 int current_cpu_utilization = 0;
@@ -165,10 +165,10 @@ static ssize_t generate_heartbeat(struct devheart_sound_buffer_t *sound_buffer) 
     data_size = 2 * single_beat_sound.size;
 
     // pause between the two beats
-    data_size += pause_sound.size * short_pause_factor;
+    data_size += 64 * short_pause_factor;
 
     // pause after the two beats
-    data_size += pause_sound.size * long_pause_factor;
+    data_size += 64 * long_pause_factor;
 
     // generate heartbeat
     sound_buffer->buffer = vzalloc(data_size * sizeof(char));
@@ -181,17 +181,17 @@ static ssize_t generate_heartbeat(struct devheart_sound_buffer_t *sound_buffer) 
     memcpy(sound_buffer->buffer, single_beat_sound.data, single_beat_sound.size);
     offset += single_beat_sound.size;
 
-    for(i = 0; i < short_pause_factor; i++) {
-        memcpy(sound_buffer->buffer + offset, pause_sound.data, pause_sound.size);
-        offset += pause_sound.size;
+    for(i = 0; i < short_pause_factor * 64; i++) {
+        memcpy(sound_buffer->buffer + offset, &PAUSE_SOUND_BYTE, sizeof(PAUSE_SOUND_BYTE));
+        offset += sizeof(PAUSE_SOUND_BYTE);
     }
 
     memcpy(sound_buffer->buffer + offset, single_beat_sound.data, single_beat_sound.size);
     offset += single_beat_sound.size;
 
-    for(i = 0; i < long_pause_factor; i++) {
-        memcpy(sound_buffer->buffer + offset, pause_sound.data, pause_sound.size);
-        offset += pause_sound.size;
+    for(i = 0; i < long_pause_factor * 64; i++) {
+        memcpy(sound_buffer->buffer + offset, &PAUSE_SOUND_BYTE, sizeof(PAUSE_SOUND_BYTE));
+        offset += sizeof(PAUSE_SOUND_BYTE);
     }
 
     sound_buffer->size = data_size;

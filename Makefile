@@ -1,7 +1,6 @@
 obj-m += devheart.o
 devheart-y = src/devheart.o
 devheart-y += src/single_beat.o
-devheart-y += src/pause.o
 
 KDIR := /lib/modules/$(shell uname -r)/build
 PWD := $(shell pwd)
