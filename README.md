@@ -45,4 +45,5 @@ Yeah! Great idea! Just, don't tell anyone ...
 - [ ] Improve sound samples
 - [ ] Cleanup code smells
 - [ ] A debian package would be awesome
+- [ ] Generate sound waves instead of having hardcoded data
 - [ ] Automated tests?!
