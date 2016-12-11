@@ -1,3 +1,4 @@
+<align="right" src="images/tuxheart.png">
 # /dev/heart
 
 Let's see ... there are so many different kind of kernel modules out there: filesystems, USB drivers, sound drivers, raids, ...
