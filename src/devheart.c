@@ -50,12 +50,11 @@ struct devheart_sound_buffer_t {
     char *buffer;
     size_t size;
     size_t current_offset;
+    // current cpu utilization in % over all available CPUs
+    int current_cpu_utilization;
 };
 
 const char PAUSE_SOUND_BYTE = 0xFF;
-
-// current cpu utilization
-int current_cpu_utilization = 0;
 
 static u64 get_idle_time(int cpu)
 {
@@ -117,12 +116,10 @@ void cpu_stat(u64 *idle_time, u64 *total_time) {
 int measure_cpu_utilization(void *data) {
     static u64 previous_cpu_idle_time = 0;
     static u64 previous_cpu_total_time = 0;
+    struct devheart_sound_buffer_t *sound_buffer = data;
 
     u64 current_cpu_idle_time, current_cpu_total_time = 0;
     u64 delta_idle_time, delta_total_time = 0;
-
-    // current CPU utilization in percentage
-    int cpu_utilization = 0;
 
     // initial fetch of cpu times
     cpu_stat(&previous_cpu_idle_time, &previous_cpu_total_time);
@@ -138,9 +135,8 @@ int measure_cpu_utilization(void *data) {
         delta_total_time = current_cpu_total_time - previous_cpu_total_time;
 
         // calculate CPU usage in percentage
-        cpu_utilization = (1000 * (delta_total_time - delta_idle_time) / delta_total_time + 5) / 10;
-        pr_info("current CPU utilization is %d%%\n", cpu_utilization);
-        current_cpu_utilization = cpu_utilization;
+        sound_buffer->current_cpu_utilization = (1000 * (delta_total_time - delta_idle_time) / delta_total_time + 5) / 10;
+        pr_info("current CPU utilization is %d%%\n", sound_buffer->current_cpu_utilization);
 
         previous_cpu_idle_time = current_cpu_idle_time;
         previous_cpu_total_time = current_cpu_total_time;
@@ -155,10 +151,10 @@ static ssize_t generate_heartbeat(struct devheart_sound_buffer_t *sound_buffer) 
     size_t offset = 0;
     int i;
 
-    pr_debug("=====> Generating new heartbeat ...\n");
+    pr_debug("=====> Generating new heartbeat ... for %d%%\n", sound_buffer->current_cpu_utilization);
 
     // TODO: experiment and improve!
-    utilization_factor = (100 - current_cpu_utilization) / 6;
+    utilization_factor = (100 - sound_buffer->current_cpu_utilization) / 6;
     short_pause_factor = utilization_factor;
     long_pause_factor = utilization_factor * 60;
 
@@ -211,6 +207,11 @@ static int device_open(struct inode *inode, struct file *file) {
         return -ENOMEM;
     }
 
+    sound_buffer->current_cpu_utilization = 0;
+
+    // TODO: check return value
+    task = kthread_run(&measure_cpu_utilization, sound_buffer, "heartmonitor");
+
     // generate first heartbeat on open to be ready when it staaaarts!
     generate_heartbeat(sound_buffer);
 
@@ -222,6 +223,7 @@ static int device_open(struct inode *inode, struct file *file) {
 static int device_release(struct inode *inode, struct file *file) {
     struct devheart_sound_buffer_t *sound_buffer = file->private_data;
 
+    kthread_stop(task);
     kfree(sound_buffer);
 
     pr_info("I'll check in on you later, Master Tux!\n");
@@ -278,9 +280,6 @@ static int __init heart_init(void)
 {
     int ret;
 
-    // TODO: check return value
-    task = kthread_run(&measure_cpu_utilization, NULL, "heartmonitor");
-
     ret = misc_register(&heart_dev);
     if(ret) {
         pr_err("could not register heart device as misc devie\n");
@@ -295,8 +294,6 @@ static int __init heart_init(void)
 
 static void __exit heart_exit(void)
 {
-    kthread_stop(task);
-
     misc_deregister(&heart_dev);
 }
 

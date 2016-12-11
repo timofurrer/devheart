@@ -14,5 +14,7 @@ devheart.ko
 devheart.mod.c
 devheart.mod.o
 devheart.o
-.single_beat.o.cmd
-single_beat.o
+src/.left_ventricle_beat.o.cmd
+src/.right_ventricle_beat.o.cmd
+src/left_ventricle_beat.o
+src/right_ventricle_beat.o
