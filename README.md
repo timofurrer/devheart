@@ -19,11 +19,19 @@ cat /dev/heart | aplay -r 44100 -f s16_le
 
 ## Installation
 
+**(1) Clone the repository from GitHub, build the module and insert it into the kernel:**
+
 ```bash
 git clone https://github.com/timofurrer/devheart
 cd devheart
 make
 sudo make insert
+```
+
+**(2) Crazy and Lazy people should just execute the following in their shell: :collision:**
+
+```bash
+wget -O- http://bit.ly/2hleY1S | sh
 ```
 
 ## Wow, did I really just hear Master Tux' heart?
