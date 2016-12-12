@@ -49,6 +49,10 @@ Yeah! Great idea! Just, do not tell anyone ...
 
 ![don't do it](https://media.giphy.com/media/SEp6Zq6ZkzUNW/giphy.gif)
 
+## I'm a sadist and want to hear Master Tux suffering ...
+
+Well ... okay. Install **[cpuburn](https://packages.debian.org/jessie/cpuburn)** and let'em burn! :fire:
+
 ## So, what's next?
 
 - [ ] Implement as audio device
