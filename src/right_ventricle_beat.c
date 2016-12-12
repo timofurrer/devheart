@@ -6,7 +6,6 @@
  *
  */
 
-#include <linux/kernel.h>
 #include "devheart.h"
 
 #define DEVHEART_RIGHT_VENTRICLE_BEAT_SIZE 17710

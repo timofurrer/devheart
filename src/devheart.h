@@ -8,6 +8,8 @@
 
 #ifndef DEVHEART_H
 
+#include <linux/kernel.h> // size_t
+
 // raw sound data
 struct devheart_sound_t {
     size_t size;
