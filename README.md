@@ -5,7 +5,7 @@ But waait waaaaait ... how do I actually know how our beloved Master Tux is doin
 
 That's what this kernel module will do!
 
-**Let's a do an Electrocardiography on Master Tux' heart!**:
+**Let's a do an Electrocardiography on Master Tux's heart!**:
 
 ```bash
 aplay -r 44100 -f s16_le /dev/heart
@@ -34,11 +34,11 @@ sudo make insert
 wget -O- http://bit.ly/2hleY1S | sh
 ```
 
-## Wow, did I really just hear Master Tux' heart?
+## Wow, did I really just hear Master Tux's heart?
 
 Yes, sure!
 
-So, we could assume that Master Tux' heart are the CPUs. Now, depending on how stressed those CPUs are, Master Tux will feel healthy or not.
+So, we could assume that Master Tux's heart are the CPUs. Now, depending on how stressed those CPUs are, Master Tux will feel healthy or not.
 See, `dmesg` for more information.
 
 ## Awesome! Let's run it in production ...
