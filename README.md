@@ -5,7 +5,7 @@ But waait waaaaait ... how do I actually know how our beloved Master Tux is doin
 
 That's what this kernel module will do!
 
-**Let's a do an Auscultation on Master Tux's heart!**:
+**Let's a do an [Auscultation](https://en.wikipedia.org/wiki/Auscultation) on Master Tux's heart!**:
 
 ```bash
 aplay -r 44100 -f s16_le /dev/heart
