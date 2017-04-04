@@ -61,3 +61,7 @@ Well ... okay. Install **[cpuburn](https://packages.debian.org/jessie/cpuburn)**
 - [ ] A debian package would be awesome
 - [ ] Generate sound waves instead of having hardcoded data
 - [ ] Automated tests?!
+
+***
+
+*<p align="center">This project is published under [MIT](LICENSE).<br>A [Timo Furrer](https://tuxtimo.me) project.<br>- :tada: -</p>*
