@@ -1,11 +1,11 @@
 # /dev/heart
 
 Let's see ... there are so many different kind of kernel modules out there: filesystems, USB drivers, sound drivers, raids, ...
-But waait waaaaait ... how do I actually know how our beloved Master Tux is doing?
+But waait waaaaait ... how do I actually know how our beloved Tux is doing?
 
 That's what this kernel module will do!
 
-**Let's a do an [Auscultation](https://en.wikipedia.org/wiki/Auscultation) on Master Tux's heart!**:
+**Let's a do an [Auscultation](https://en.wikipedia.org/wiki/Auscultation) on Tux's heart!**:
 
 ```bash
 aplay -r 44100 -f s16_le /dev/heart
@@ -34,11 +34,11 @@ sudo make insert
 wget -O- http://bit.ly/2hleY1S | sh
 ```
 
-## Wow, did I really just hear Master Tux's heart?
+## Wow, did I really just hear Tux's heart?
 
 Yes, sure!
 
-So, we could assume that Master Tux's heart are the CPUs. Now, depending on how stressed those CPUs are, Master Tux will feel healthy or not.
+So, we could assume that Tux's heart are the CPUs. Now, depending on how stressed those CPUs are, Tux will feel healthy or not.
 See, `dmesg` for more information.
 
 ## Awesome! Let's run it in production ...
@@ -49,7 +49,7 @@ Yeah! Great idea! Just, do not tell anyone ...
 
 ![don't do it](https://media.giphy.com/media/SEp6Zq6ZkzUNW/giphy.gif)
 
-## I'm a sadist and want to hear Master Tux suffering ...
+## I'm a sadist and want to hear Tux suffering ...
 
 Well ... okay. Install **[cpuburn](https://packages.debian.org/jessie/cpuburn)** and let'em burn! :fire:
 
