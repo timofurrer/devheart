@@ -8,6 +8,7 @@
 
 // use kernel module name in front of kernel log messages
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+#define CPUTIME_PER_USEC 4096ULL
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -72,7 +73,7 @@ static u64 get_idle_time(int cpu)
         idle = kcpustat_cpu(cpu).cpustat[CPUTIME_IDLE];
     }
     else {
-        idle = usecs_to_cputime64(idle_time);
+        idle = idle_time * CPUTIME_PER_USEC;
     }
 
     return idle;
@@ -91,7 +92,7 @@ static u64 get_iowait_time(int cpu)
         iowait = kcpustat_cpu(cpu).cpustat[CPUTIME_IOWAIT];
     }
     else {
-        iowait = usecs_to_cputime64(iowait_time);
+        iowait = iowait_time * CPUTIME_PER_USEC;
     }
 
     return iowait;
@@ -99,7 +100,8 @@ static u64 get_iowait_time(int cpu)
 
 void cpu_stat(u64 *idle_time, u64 *total_time) {
     int i;
-    u64 user, nice, system, idle, iowait, irq, softirq, steal = 0;
+    u64 user = 0, nice = 0, system = 0, idle = 0;
+    u64 iowait = 0, irq = 0, softirq = 0, steal = 0;
 
     for_each_possible_cpu(i) {
         user += kcpustat_cpu(i).cpustat[CPUTIME_USER];
